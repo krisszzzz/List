@@ -1,13 +1,16 @@
-
-#include "../Proccessor/Proccessor_Lib/log.cpp"
-#include "../Proccessor/Proccessor_lib/murmurhash.cpp"
+#include "../proccessor/Proccessor_Lib/log.h"
+//#include "../Proccessor/Proccessor_Lib/log.cpp"
+//#include "../Proccessor/Proccessor_lib/murmurhash.cpp"
 
 typedef long long ssize_t;
 
 #define DEBUG  // Remove it if you in release state, but then the responsibility lies with you and only you
                // Debug mode include hash-protection, visual dump and more deeper list verificator
-               // Used before list.h because it's contain this define proccessing
+               // Used before list.h and log.h because they're contain this define proccessing
+#include "../proccessor/Proccessor_Lib/murmurhash.h"
 #include "list.h"
+
+
 
 const list_t Empty_elem_sign = (list_t)MurmurHash("Danya + proccessor = dead inside", 32); 
 /// Special constant to signify that the some element is free
