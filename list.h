@@ -1,3 +1,6 @@
+#if !defined LIST_INCLUDED
+#define LIST_INCLUDED
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdlib.h>
@@ -5,8 +8,13 @@
 #define LIST_NO_NEXT_OR_PREV_VAL 0
 #define LIST_FIRST_ELEM_VAL      0
 #define LIST_OVERFLOW           -1
+#define PUSH_ERROR              -1
 #define VERIFICATION_ERROR      -1
 #define INCCORECT_INSERTION     -1
+#define INIT_ERROR              -1
+#define REMOVE_ERROR            -1
+#define CONVERTATION_ERROR      -1
+#define DESTRUCTION_ERROR       -1
 
 #ifdef DEBUG
 #define ON_DEBUG(code) code
@@ -29,6 +37,7 @@ struct List_node
 struct List 
 {
     List_node* elements;
+    int        is_sorted;
 
     indx_t     tail;
     indx_t     head;
@@ -41,15 +50,34 @@ struct List
     )
 };
 
+#define PushFront(list, value)            \
+InsertBefore(list, (list)->tail, value);
 
-void ListInit(List* to_init, indx_t list_size);
+#define PushBack(list, value)             \
+InsertBefore(list, (list)->head, value);
+
+#define PopBack(list)                     \
+RemoveFromList(list, (list)->tail);
+
+#define PopFront(list)                    \
+RemoveFromList(list, (list)->head);
+
+int ListInit(List* list,  indx_t list_size);
 
 int IsEmptyList(List* to_check);
 
-int InsertToList(List* list, indx_t physical_index, list_t value);
+indx_t InsertAfter(List* list, indx_t physical_index, list_t value);
 
 int VerifyList(List* list);
 
-void RemoveFromList(List* list, ssize_t physical_index);
-
 void ListGraphicalDump(List* to_dump);
+
+int RemoveFromList(List* list, indx_t physical_index);
+
+indx_t InsertBefore(List* list, indx_t physical_index, list_t value);
+
+indx_t ConvertLogicalToPhysicalIndex(List* list, indx_t logical_index);
+
+int ListDtor(List* list);
+
+#endif
