@@ -3,15 +3,16 @@
 //#include<stdarg.h>
 #include "log.h"
 #include <assert.h>
+#include <stdlib.h>
 
+const int    MAX_BUFFER_SIZE            = 256;
 const int    MAX_LOG_AMOUNT             = 3;
-
 static int   NUM_OF_LOG_FILES           = 0;
-static FILE* LOG_FILES[MAX_LOG_AMOUNT]  = { stderr, stderr, stderr };
+static FILE* LOG_FILES[MAX_LOG_AMOUNT]  = { stderr, stderr, stderr};
 
 void SetLogFile(FILE* log_file)
 {
-    if(log_file != nullptr && NUM_OF_LOG_FILES < MAX_LOG_AMOUNT) {
+    if(log_file != nullptr & NUM_OF_LOG_FILES < MAX_LOG_AMOUNT) {
         LOG_FILES[NUM_OF_LOG_FILES++] = log_file;
     }
 
@@ -23,7 +24,7 @@ void SetLogFile(FILE* log_file)
 }
 
 void ResetLogFile()
-{
+{ 
     if(NUM_OF_LOG_FILES <= 0) {
         printf("You use ResetLogFile(), but don't use you SetLogFile(), or probably you use ResetLogFile() twice or more.\n");
         assert(!"Error");
@@ -71,4 +72,26 @@ int PrintToLog(const char* format, ...)
 FILE* GetCurrentLogFile()
 {
     return (NUM_OF_LOG_FILES == 0) ? LOG_FILES[0] : LOG_FILES[NUM_OF_LOG_FILES - 1];
+}
+
+int ErrorPrint(const char* format, ...)
+{
+	void** buffer				  = (void**)calloc(MAX_BUFFER_SIZE, sizeof(void*)); 
+    int    backtrace_size	      = backtrace(buffer, MAX_BUFFER_SIZE);
+    char** strings_of_backtracing = backtrace_symbols(buffer, backtrace_size);
+
+	PrintToLog("Error: in functions: ");
+	
+	for(int layer_count = 0; layer_count < backtrace_size - 1; ++layer_count)
+	{
+		PrintToLog("%s ->", strings_of_backtracing[layer_count]);
+	}
+
+	PrintToLog("%s\n", strings_of_backtracing[backtrace_size - 1]);
+    free(strings_of_backtracing);
+	free(buffer);
+	va_list va_arguments;
+	va_start(va_arguments, format);
+	return PrintToLog(format, va_arguments);
+
 }
